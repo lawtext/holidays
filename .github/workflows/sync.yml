@@ -24,7 +24,7 @@ jobs:
       - name: Python Env
         uses: actions/setup-python@v7
         with:
-          python-version: "3.x"
+          python-version: "3.13"
 
       - name: Run script
         # continue-on-error: true
