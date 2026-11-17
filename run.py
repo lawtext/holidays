@@ -38,11 +38,11 @@ def parse_page_to_md(text: str) -> str:
             break
 
     md_content = md_content.replace(")", "）").replace("(", "（").replace("○", "〇")
-    md_content = re.sub(r"^\s*(国务院办公厅关于\d+年)\n+(部分)", r"# \1\2", md_content, flags=re.MULTILINE)
+    md_content = re.sub(r"^\s*(?:\*\*)?(国务院办公厅关于\d+年)(?:\*\*)?\n+(?:\*\*)?(部分节假日安排的通知)(?:\*\*)?", r"# \1\2", md_content, flags=re.MULTILINE)
     md_content = re.sub(r"^(国办发明电)", r"> \1", md_content, flags=re.MULTILINE)
     md_content = re.sub(r"^　　(\S)", r"\n\1", md_content, flags=re.MULTILINE)
-    md_content = re.sub(r"^\s+|\s+$", "", md_content, flags=re.MULTILINE)
-    md_content = re.sub(r"\n{3,}", r"\n\n", md_content)
+    md_content = re.sub(r"^[ \t\u3000]+|[ \t\u3000]+$", "", md_content, flags=re.MULTILINE)
+    # md_content = re.sub(r"\n{3,}", r"\n\n", md_content)
 
     return md_content
 
