@@ -1,0 +1,50 @@
+name: Sync data
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Python Env
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Run script
+        # continue-on-error: true
+        run: |
+          INDEX_FILE="index.md"
+          DATA_DIR="docs"
+          pip install -r requirements.txt
+          python run.py $DATA_DIR data.json
+
+          cd $DATA_DIR || exit
+          echo "# 历年部分节假日安排的通知" > $INDEX_FILE
+          echo >> $INDEX_FILE
+          for f in *.md; do
+            [ -f "$f" ] && [ "$f" != "$INDEX_FILE" ] && echo "- [${f%.md}]($f)"
+          done | sort -r >> $INDEX_FILE
+
+      - name: Git auto commit
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          commit_message: Automated update
